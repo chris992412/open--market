@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register | OPEN MARKET</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: var(--bg-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .register-box {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .register-box input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .register-box button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .register-box button:hover {
+      background: var(--primary-hover);
+    }
+
+    small {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.85rem;
+    }
+
+    #darkToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <a href="cart.html" class="mini-cart">🛒<span id="cartCount">0</span></a>
+  <button id="darkToggle">🌙 Dark Mode</button>
+
+  <div class="register-box">
+    <h2>Create Account</h2>
+    <input type="text" id="name" placeholder="Full name" required />
+    <input type="email" id="email" placeholder="Email address" required />
+    <input type="password" id="passcode" placeholder="Choose passcode" required />
+    <input type="text" id="ref" placeholder="Referral email (optional)" />
+    <button onclick="register()">Register</button>
+    <small>Already have an account? <a href="login.html">Login</a></small>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const ref = params.get("ref");
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    document.getElementById("ref").value = ref ? decodeURIComponent(ref) : "";
+
+    const countEl = document.getElementById("cartCount");
+    if (countEl) countEl.textContent = cart.length;
+
+    const toggle = document.getElementById("darkToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+
+    function register() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const pass = document.getElementById("passcode").value.trim();
+      const referral = document.getElementById("ref").value.trim();
+
+      if (!name || !email || !pass) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      if (users.find(u => u.email.toLowerCase() === email)) {
+        alert("Email already registered.");
+        return;
+      }
+
+      users.push({ name, email, passcode: pass, referral });
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("✅ Account created!");
+      location.href = `dashboard.html?email=${encodeURIComponent(email)}`;
+    }
+  </script>
+</body>
+</html>

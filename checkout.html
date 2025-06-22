@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout | OPEN MARKET</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .checkout-wrapper {
+      max-width: 800px;
+      margin: 80px auto 30px;
+      padding: 20px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .checkout-wrapper h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    .cart-preview {
+      margin-bottom: 30px;
+    }
+
+    .cart-preview ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .cart-preview li {
+      margin-bottom: 10px;
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .form-section label {
+      font-weight: 500;
+      display: block;
+      margin: 12px 0 4px;
+    }
+
+    .form-section input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .submit-btn {
+      margin-top: 20px;
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #darkToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <a href="cart.html" class="mini-cart">🛒<span id="cartCount">0</span></a>
+  <button id="darkToggle">🌙 Dark Mode</button>
+
+  <div class="checkout-wrapper">
+    <h2>🧾 Confirm Your Order</h2>
+
+    <div class="cart-preview" id="cartPreview">Loading cart...</div>
+
+    <div class="form-section">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter your name" required />
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" placeholder="Enter phone number" required />
+
+      <label for="delivery">Delivery Option</label>
+      <select id="delivery">
+        <option value="Pickup">Pickup</option>
+        <option value="Delivery">Delivery</option>
+      </select>
+
+      <button class="submit-btn" onclick="confirmOrder()">Confirm Order</button>
+    </div>
+
+    <div id="confirmationMessage" class="success" style="display:none;">
+      ✅ Your order has been placed successfully!
+    </div>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cartPreview = document.getElementById("cartPreview");
+    let total = 0;
+
+    if (cart.length === 0) {
+      cartPreview.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      let html = "<ul>";
+      cart.forEach(p => {
+        html += `<li><strong>${p.title}</strong> - ₵${p.price}</li>`;
+        total += parseFloat(p.price);
+      });
+      html += "</ul>";
+      html += `<div class="total">Total: ₵${total.toFixed(2)}</div>`;
+      cartPreview.innerHTML = html;
+    }
+
+    function confirmOrder() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const delivery = document.getElementById("delivery").value;
+
+      if (!name || !phone || cart.length === 0) {
+        alert("Please fill out all fields and ensure cart has items.");
+        return;
+      }
+
+      const order = {
+        name,
+        phone,
+        delivery,
+        cart,
+        total: total.toFixed(2),
+        timestamp: new Date().toLocaleString()
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbx66cE0kb-1Q_MWxSF31cDXF9vPbHmb0J7HrJ-JL1abSKfMfdwliYP9MrDLfi6q5_k-5Q/exec", {
+        method: "POST",
+        body: JSON.stringify(order),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => res.json())
+        .then(response => {
+          if (response.success) {
+            localStorage.removeItem("cart");
+            document.getElementById("confirmationMessage").style.display = "block";
+            document.querySelector(".form-section").style.display = "none";
+            cartPreview.innerHTML = "<p>Your cart has been submitted.</p>";
+            document.getElementById("cartCount").textContent = "0";
+          } else {
+            alert("⚠️ Something went wrong. Try again.");
+          }
+        }).catch(err => {
+          console.error("Error:", err);
+          alert("Failed to submit order. Please try again later.");
+        });
+    }
+
+    // Update cart count
+    const cartCount = document.getElementById("cartCount");
+    if (cartCount) cartCount.textContent = cart.length;
+
+    // Dark mode toggle
+    const toggle = document.getElementById("darkToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+  </script>
+</body>
+</html>

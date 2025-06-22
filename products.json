@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Handcrafted Clay Mug",
+    "desc": "Made with natural clay from Amedzofe. Microwave safe.",
+    "price": "55",
+    "email": "artisan@example.com",
+    "image": "https://i.imgur.com/1pJQLS0.jpg"
+  },
+  {
+    "title": "Wireless Mini Speaker",
+    "desc": "Compact, loud, and has a 10-hour battery. Bluetooth 5.0.",
+    "price": "120",
+    "email": "soundtech@example.com",
+    "image": "https://i.imgur.com/8NnF0Iv.jpg"
+  },
+  {
+    "title": "Organic Shea Butter",
+    "desc": "Raw, unrefined shea straight from Tamale. 250ml tub.",
+    "price": "35",
+    "email": "naturalskin@example.com",
+    "image": "https://i.imgur.com/b8DfXjO.jpg"
+  },
+  {
+    "title": "Fabric Backpack",
+    "desc": "Lightweight backpack with traditional kente pattern.",
+    "price": "95",
+    "email": "bagsngh@example.com",
+    "image": "https://i.imgur.com/kYFKGTl.jpg"
+  },
+  {
+    "title": "Eco Bamboo Toothbrush (Pack of 2)",
+    "desc": "Biodegradable handle, soft bristles. Sustainable choice.",
+    "price": "25",
+    "email": "greenliving@example.com",
+    "image": "https://i.imgur.com/LUl7bNw.jpg"
+  }
+]

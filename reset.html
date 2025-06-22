@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reset Password | OPEN MARKET</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f3f3f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    form {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      color: #2e8b57;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #2e8b57;
+      color: white;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 12px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .message.success { color: green; }
+    .message.error { color: red; }
+  </style>
+</head>
+<body>
+  <form id="resetForm">
+    <h2>🔁 Reset Passcode</h2>
+    <input type="email" id="email" placeholder="Registered Email" required />
+    <input type="password" id="newPass" placeholder="New Passcode" required />
+    <button type="submit">Reset</button>
+    <div id="resetStatus" class="message"></div>
+    <div class="message"><a href="login.html">Return to login</a></div>
+  </form>
+
+  <script>
+    document.getElementById("resetForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const newPass = document.getElementById("newPass").value.trim();
+      const status = document.getElementById("resetStatus");
+
+      const users = JSON.parse(localStorage.getItem("registeredUsers") || "{}");
+
+      if (!users[email]) {
+        status.textContent = "Email not found.";
+        status.className = "message error";
+        return;
+      }
+
+      users[email].passcode = newPass;
+      localStorage.setItem("registeredUsers", JSON.stringify(users));
+      status.textContent = "✅ Passcode successfully updated!";
+      status.className = "message success";
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

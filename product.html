@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details | OPEN MARKET</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .product-detail {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .product-detail img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .action-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .add-btn {
+      background: var(--primary);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+    }
+
+    .add-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .back-btn {
+      background: #ccc;
+      padding: 10px 16px;
+      border-radius: 6px;
+    }
+
+    #darkToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <a href="cart.html" class="mini-cart">🛒<span id="cartCount">0</span></a>
+  <button id="darkToggle">🌙 Dark Mode</button>
+
+  <div class="product-detail" id="productContainer">Loading product...</div>
+
+  <script>
+    const id = new URLSearchParams(location.search).get("id");
+    const products = JSON.parse(localStorage.getItem("products") || "[]");
+    const product = products[id];
+    const container = document.getElementById("productContainer");
+
+    if (!product) {
+      container.innerHTML = "<p>❌ Product not found.</p>";
+    } else {
+      container.innerHTML = `
+        <img src="${product.image}" alt="${product.title}" />
+        <h2>${product.title}</h2>
+        <p>${product.desc}</p>
+        <span>₵${product.price}</span>
+        <small>Posted by <strong>${product.seller || product.email || 'Anonymous'}</strong></small>
+        <div class="action-buttons">
+          <button class="add-btn" onclick="addToCart()">🛒 Add to Cart</button>
+          <a href="explore.html" class="back-btn">← Back to Explore</a>
+        </div>
+      `;
+    }
+
+    function addToCart() {
+      if (!product) return;
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      cart.push(product);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("✅ Product added to cart!");
+      const count = document.getElementById("cartCount");
+      if (count) count.textContent = cart.length;
+    }
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const countEl = document.getElementById("cartCount");
+    if (countEl) countEl.textContent = cart.length;
+
+    const toggle = document.getElementById("darkToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+  </script>
+</body>
+</html>

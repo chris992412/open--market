@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Market | OPEN MARKET</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    nav .links {
+      display: flex;
+      gap: 18px;
+    }
+
+    nav h1 {
+      font-size: 1.2rem;
+    }
+
+    nav a {
+      color: white;
+      font-weight: 500;
+    }
+
+    .logout {
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-decoration: underline;
+    }
+
+    .market {
+      max-width: 1000px;
+      margin: 80px auto 30px;
+      padding: 20px;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    #darkToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>📦 OPEN MARKET</h1>
+    <div class="links">
+      <a href="#" id="dashLink">Dashboard</a>
+      <a href="#" id="uploadLink">Upload</a>
+      <a href="explore.html">Explore</a>
+      <span class="logout" onclick="logout()">Logout</span>
+    </div>
+  </nav>
+
+  <a href="cart.html" class="mini-cart">🛒<span id="cartCount">0</span></a>
+  <button id="darkToggle">🌙 Dark Mode</button>
+
+  <div class="market">
+    <h2 id="welcomeText">Welcome to your Market</h2>
+    <div class="products" id="myMarket">Loading your items...</div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const email = params.get("email") || "";
+
+    document.getElementById("welcomeText").textContent = email
+      ? `Products listed by ${email}`
+      : "Your Market";
+
+    // Nav links
+    document.getElementById("dashLink").href = `dashboard.html?email=${encodeURIComponent(email)}`;
+    document.getElementById("uploadLink").href = `upload.html?email=${encodeURIComponent(email)}`;
+
+    // Cart count
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cartCount = document.getElementById("cartCount");
+    if (cartCount) cartCount.textContent = cart.length;
+
+    // Load seller’s products
+    const marketEl = document.getElementById("myMarket");
+    const sheetURL = "https://script.google.com/macros/s/AKfycbyNL12dwTYegEiOnlDp6rx854-tPHh9b2KdUVTaw1KHB-YrFwEaNZuYE0DWne7tS8Lj/exec";
+
+    fetch(sheetURL)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data)) {
+          marketEl.innerHTML = "<p>❌ Failed to load market.</p>";
+          return;
+        }
+
+        const filtered = data.filter(p =>
+          email && p.email && p.email.toLowerCase() === email.toLowerCase()
+        );
+
+        if (!filtered.length) {
+          marketEl.innerHTML = "<p class='empty-message'>You haven’t listed anything yet.</p>";
+          return;
+        }
+
+        marketEl.innerHTML = "";
+        filtered.forEach(p => {
+          const card = document.createElement("div");
+          card.className = "product-card";
+          card.innerHTML = `
+            <img src="${p.image}" alt="${p.title}" />
+            <h3>${p.title}</h3>
+            <p>${p.desc}</p>
+            <span>₵${p.price}</span>
+            <small>${p.email}</small>
+          `;
+          marketEl.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading market:", err);
+        marketEl.innerHTML = "<p>Something went wrong.</p>";
+      });
+
+    // Dark Mode toggle
+    const toggle = document.getElementById("darkToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+
+    function logout() {
+      if (confirm("Log out of your session?")) {
+        location.href = "index.html";
+      }
+    }
+  </script>
+</body>
+</html>

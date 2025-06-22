@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OPEN MARKET | Welcome</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: var(--bg-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .hero, .mini-cart, #darkToggle {
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    #darkToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      padding: 8px 12px;
+      background: var(--primary);
+      color: white;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      background-color: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <a href="cart.html" class="mini-cart">🛒<span id="cartCount">0</span></a>
+  <button id="darkToggle">🌙 Dark Mode</button>
+
+  <div class="hero">
+    <h1>📦 OPEN MARKET</h1>
+    <p>Welcome to your digital marketplace. Earn by referring, shop by discovering.</p>
+    <button onclick="location.href='login.html'">🔐 Login</button>
+    <button onclick="location.href='register.html'">📝 Create Account</button>
+    <button onclick="location.href='explore.html'">🛍️ Browse Marketplace</button>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const countEl = document.getElementById("cartCount");
+    if (countEl) countEl.textContent = cart.length;
+
+    const toggle = document.getElementById("darkToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+  </script>
+</body>
+</html>

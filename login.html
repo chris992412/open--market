@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | OPEN MARKET</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: var(--bg-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .login-box {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .login-box button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .login-box button:hover {
+      background: var(--primary-hover);
+    }
+
+    #darkToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 80px;
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      background: var(--primary-hover);
+    }
+
+    small {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="cart.html" class="mini-cart">🛒<span id="cartCount">0</span></a>
+  <button id="darkToggle">🌙 Dark Mode</button>
+
+  <div class="login-box">
+    <h2>Welcome back 👋</h2>
+    <input type="email" id="email" placeholder="Your email" required />
+    <input type="password" id="passcode" placeholder="Your passcode" required />
+    <button onclick="login()">Login</button>
+    <small>Don't have an account? <a href="register.html">Register</a></small>
+  </div>
+
+  <script>
+    const countEl = document.getElementById("cartCount");
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (countEl) countEl.textContent = cart.length;
+
+    const toggle = document.getElementById("darkToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggle.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+
+    function login() {
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const pass = document.getElementById("passcode").value.trim();
+
+      if (!email || !pass) {
+        alert("Please enter both email and passcode.");
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const user = users.find(u => u.email.toLowerCase() === email && u.passcode === pass);
+
+      if (!user) {
+        alert("❌ Invalid credentials.");
+        return;
+      }
+
+      alert("✅ Login successful!");
+      window.location.href = `dashboard.html?email=${encodeURIComponent(email)}`;
+    }
+  </script>
+</body>
+</html>
